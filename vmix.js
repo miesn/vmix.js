@@ -4,6 +4,9 @@ function vmixJs() {
     this.inputList = [];
     this.vmixVersion;
     this.refreshInput = function refreshInput() {
+        //刷新inputList
+        console.clear();
+        this.inputList = [];
         var url = "http://" + this.vmixIp + ":8088/api/";
         console.log(url);
         url = encodeURI(url);
@@ -60,34 +63,34 @@ function vmixJs() {
         console.groupEnd();
     }
     this.query = function query(queryData) {
+        //发送请求
+        console.groupCollapsed("Query");
         var url = "http://" + this.vmixIp + ":8088/api/?" + objectToQueryString(queryData);
         console.log(url);
         console.table(queryData);
         url = encodeURI(url);
-        var time = 1000;
-        var timeout = false;
         var request = new XMLHttpRequest();
-        var timer = setTimeout(function () {
-            timeout = true;
-            request.abort();
-        }, time);
-        request.open("GET", url);
-        request.onreadystatechange = function () {
-            if (request.readyState !== 4) {
-                return;
-            }
-            if (timeout) {
-                console.error("timeout");
-                return;
-            }
-            clearTimeout(timer);
-            if (request.status === 200) {
-                callback(request.responseText);
-            }
-
-        };
-
+        request.open("GET", url, false);
         request.send(null);
+        console.groupCollapsed("Query Result");
+        console.log(request.responseText);
+        console.groupEnd();
+        console.groupEnd();
+    }
+    this.setText = function setText(input, field, value) {
+        //改变文字
+        input = JSON.parse(input);
+        if (input.type == "Xaml" || input.type == "GT") {
+            queryData = {
+                Function: "setText",
+                Input: input.inputKey,
+                SelectedName: field,
+                Value: value
+            }
+            this.query(queryData);
+        } else {
+            return false;
+        }
     }
 }
 
