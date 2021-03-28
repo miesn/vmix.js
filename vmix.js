@@ -2,6 +2,7 @@
 function vmixJs() {
     this.vmixIp;
     this.inputList = [];
+    this.inputText = [];
     this.vmixVersion;
     this.refreshInput = function refreshInput() {
         //刷新inputList
@@ -13,7 +14,6 @@ function vmixJs() {
         var request = new XMLHttpRequest();
         request.open("GET", url, false);
         request.send(null);
-
         //处理xml
         var xmlDoc = loadXML(request.responseText);
         if (xmlDoc) {
@@ -61,6 +61,7 @@ function vmixJs() {
         console.group("Input List");
         console.table(this.inputList);
         console.groupEnd();
+        this.refreshText();
     }
     this.query = function query(queryData) {
         //发送请求
@@ -68,7 +69,7 @@ function vmixJs() {
         var url = "http://" + this.vmixIp + ":8088/api/?" + objectToQueryString(queryData);
         console.log(url);
         console.table(queryData);
-        url = encodeURI(url);
+        //url = encodeURI(url);
         var request = new XMLHttpRequest();
         request.open("GET", url, false);
         request.send(null);
@@ -90,6 +91,14 @@ function vmixJs() {
             this.query(queryData);
         } else {
             return false;
+        }
+    }
+    this.refreshText = function refreshText() {
+        this.inputText = [];
+        for (var i = 0; i < this.inputList.length; i++) {
+            if (JSON.parse(this.inputList[i]).type == "Xaml" || JSON.parse(this.inputList[i]).type == "GT") {
+                this.inputText.push(this.inputList[i]);
+            }
         }
     }
 }

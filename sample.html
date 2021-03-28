@@ -8,15 +8,57 @@
 </head>
 
 <body>
+    <h1>vMix.js Sample</h1>
+    <hr />
+    <h3>Method:setText</h3>
+    <select id="textInputSelect" onchange="refreshInputNameSelect()">
+        <option></option>
+    </select>
+    <select id="textInputFieldSelect">
+        <option></option>
+    </select>
+    <input type="text" id="textInputValue"></input>
+    <button onclick="setTextDemo()">setText</button>
+
     <script type="text/javascript" src="vmix.js"></script>
     <script>
         var myvmix = new vmixJs();
         myvmix.vmixIp = "127.0.0.1";
         myvmix.refreshInput();
 
-        myvmix.setText(myvmix.inputList[0], "Message", Date.now().toString());
-        myvmix.setText(myvmix.inputList[0], "Title", "Test");
-        
+        for (var i = 0; i < myvmix.inputText.length; i++) {
+            //setText Demo的Input下拉框添加输入选项
+            document.getElementById('textInputSelect').add(new Option(JSON.parse(myvmix.inputText[i]).inputName, JSON.parse(myvmix.inputText[i]).inputKey));
+        }
+
+        function refreshInputNameSelect() {
+            //setText Demo的字段下拉框添加输入选项
+            document.getElementById("textInputFieldSelect").options.length = 0;
+            var obj = document.getElementById('textInputSelect');
+            var filterInputTextKey = obj.options[obj.selectedIndex].value;
+            var selectInputText = myvmix.inputText.filter((p) => {
+                return JSON.parse(p).inputKey == filterInputTextKey;
+            });
+            selectInputText = JSON.parse(selectInputText);
+            for (var i = 0; i < selectInputText.inputText.length; i++) {
+                document.getElementById('textInputFieldSelect').add(new Option((selectInputText.inputText[i].name), (selectInputText.inputText[i].name)));
+            }
+        }
+
+        function setTextDemo() {
+            //找到对应输入对象，字段和值，传给setText方法
+            var obj = document.getElementById('textInputSelect');
+            var filterInputTextKey = obj.options[obj.selectedIndex].value;
+            
+            var obj = document.getElementById('textInputFieldSelect');
+            var filterInputTextField = obj.options[obj.selectedIndex].value;
+
+            var selectInputText = myvmix.inputText.filter((p) => {
+                return JSON.parse(p).inputKey == filterInputTextKey;
+            });
+            myvmix.setText(selectInputText, filterInputTextField, document.getElementById('textInputValue').value);
+        }
+
 
     </script>
 </body>
